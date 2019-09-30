@@ -1,0 +1,27 @@
+{
+  "name": "af-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsnd src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/event-stream": "^3.3.34",
+    "@types/got": "^9.6.7",
+    "@types/jest": "^24.0.18",
+    "@types/luxon": "^1.15.2",
+    "@types/node": "^12.7.8",
+    "event-stream": "^4.0.1",
+    "got": "^9.6.0",
+    "jest": "^24.9.0",
+    "luxon": "^1.19.3",
+    "ts-jest": "^24.1.0",
+    "ts-node-dev": "^1.0.0-pre.43",
+    "typescript": "^3.6.3"
+  }
+}
