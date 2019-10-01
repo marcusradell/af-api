@@ -1,4 +1,4 @@
-// API: https://jobtechdev.se/swagger/#/platsannonser/fetchHTMLPlatsannons
+// API:https://jobtechdev.se/swagger/#/platsannonser/fetchHTMLPlatsannons
 
 // Want to use: https://jobstream.api.jobtechdev.se/
 
