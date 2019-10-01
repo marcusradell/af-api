@@ -1,7 +1,8 @@
 // API: https://jobtechdev.se/swagger/#/platsannonser/fetchHTMLPlatsannons
 
+// Want to use: https://jobstream.api.jobtechdev.se/
+
 import got from "got";
-import fs from "fs";
 import { DateTime } from "luxon";
 
 interface JobDetails {
@@ -31,15 +32,12 @@ const casinoList = ["Gears Of Leo AB"];
 
 const blackList = [...casinoList];
 
-const matches = 20;
+const page = 1;
 const stockholmLanId = 1;
 const searchTerm = "javascript";
 
 const logoType = (jobId: string) =>
   `https://api.arbetsformedlingen.se/af/v0/platsannonser/${jobId}/logotyp`;
-
-const jobUrl = (jobId: string) =>
-  `https://api.arbetsformedlingen.se/af/v0/platsannonser/${jobId}`;
 
 const exception = (error: any) => {
   console.error({
@@ -60,16 +58,23 @@ const jobDescription = async (jobId: string) => {
     }
   ).catch(exception);
 
-  const result = (JSON.parse(jobResponse.body) as JobDetails).platsannons.annons
+  let result = (JSON.parse(jobResponse.body) as JobDetails).platsannons.annons
     .annonstext;
+
+  try {
+    result = decodeURIComponent(result);
+  } catch {
+    result = unescape(result);
+  }
+
   return result;
 };
 
-const main = async () => {
+export const jobs = async (matches: number) => {
   const today = DateTime.utc();
 
   const { body } = await got(
-    `https://api.arbetsformedlingen.se/af/v0/platsannonser/matchning?lanid=${stockholmLanId}&nyckelord=${searchTerm}&sida=1&antalrader=${matches}`,
+    `https://api.arbetsformedlingen.se/af/v0/platsannonser/matchning?lanid=${stockholmLanId}&nyckelord=${searchTerm}&sida=${page}&antalrader=${matches}`,
 
     {
       headers: {
@@ -77,8 +82,6 @@ const main = async () => {
       }
     }
   ).catch(exception);
-
-  fs.writeFileSync("output.json", body);
 
   const jobMatches: JobMatches = JSON.parse(body);
 
@@ -113,7 +116,5 @@ const main = async () => {
       )
   );
 
-  fs.writeFileSync("short_infos.json", JSON.stringify(shortInfos, null, 2));
+  return shortInfos;
 };
-
-main();

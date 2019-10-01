@@ -2,3 +2,5 @@ node_modules
 output.json
 short_infos.json
 ad.json
+
+.env
