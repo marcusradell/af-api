@@ -9,8 +9,8 @@ const main = async () => {
   dotenv.config();
   const app = express();
 
-  if (!process.env.API_PORT) {
-    throw new Error("Missing process.env.API_PORT.");
+  if (!process.env.PORT) {
+    throw new Error("Missing process.env.PORT.");
   }
 
   if (!process.env.JOB_MATCHES) {
@@ -29,7 +29,7 @@ const main = async () => {
     const reactDom = renderToString(
       <div>
         {shortInfos.map(si => (
-          <div style={{ marginBottom: "100px" }}>
+          <div key={si.annonsid} style={{ marginBottom: "100px" }}>
             <div>
               <h1
                 style={{
@@ -91,7 +91,7 @@ const main = async () => {
     res.json(shortInfos);
   });
 
-  app.listen(process.env.API_PORT, () => {
+  app.listen(process.env.PORT, () => {
     console.log("Server started.");
   });
 };
