@@ -76,7 +76,7 @@ const main = async () => {
                 />
               </div>
 
-              <p>{si.jobDescription}</p>
+              <p style={{ whiteSpace: "pre-wrap" }}>{si.jobDescription}</p>
             </div>
           </div>
         ))}
