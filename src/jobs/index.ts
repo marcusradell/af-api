@@ -4,6 +4,7 @@
 
 import got from "got";
 import { DateTime } from "luxon";
+import { jobDescriptionFactory } from "./job_description";
 
 interface JobDetails {
   platsannons: {
@@ -48,27 +49,7 @@ const exception = (error: any) => {
   return process.exit(100);
 };
 
-const jobDescription = async (jobId: string) => {
-  const jobResponse = await got(
-    `https://api.arbetsformedlingen.se/af/v0/platsannonser/${jobId}`,
-    {
-      headers: {
-        Accept: "application/json"
-      }
-    }
-  ).catch(exception);
-
-  let result = (JSON.parse(jobResponse.body) as JobDetails).platsannons.annons
-    .annonstext;
-
-  try {
-    result = decodeURIComponent(result);
-  } catch {
-    result = unescape(result);
-  }
-
-  return result;
-};
+const jobDescriptionModel = jobDescriptionFactory().model;
 
 export const jobs = async (matches: number) => {
   const today = DateTime.utc();
@@ -100,19 +81,31 @@ export const jobs = async (matches: number) => {
           relevans,
           sista_ansokningsdag,
           annonsurl
-        }) => ({
-          annonsid,
-          annonsurl,
-          annonsrubrik,
-          arbetsplatsnamn,
-          relevans,
-          sista_ansokningsdag,
-          daysLeft: DateTime.fromISO(sista_ansokningsdag)
-            .diff(today, ["days", "hours"])
-            .toObject().days,
-          logotype: logoType(annonsid),
-          jobDescription: await jobDescription(annonsid)
-        })
+        }) => {
+          const jobDescription = await jobDescriptionModel
+            .getJobDescription(annonsid)
+            .then(result => {
+              if (result.status === "exceptioned") {
+                console.error(result.error);
+                return "Can't show job description.";
+              }
+              return result.jobDetails;
+            });
+
+          return {
+            annonsid,
+            annonsurl,
+            annonsrubrik,
+            arbetsplatsnamn,
+            relevans,
+            sista_ansokningsdag,
+            daysLeft: DateTime.fromISO(sista_ansokningsdag)
+              .diff(today, ["days", "hours"])
+              .toObject().days,
+            logotype: logoType(annonsid),
+            jobDescription
+          };
+        }
       )
   );
 

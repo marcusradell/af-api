@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { jobs } from "./jobs";
 import React from "react";
+// TODO: Use renderToStream
 import { renderToString } from "react-dom/server";
 import { htmlTemplate } from "./html_template";
 
@@ -25,64 +26,57 @@ const main = async () => {
 
   const shortInfos = await jobs(matches);
 
-  app.get("/", (req, res) => {
-    const reactDom = renderToString(
-      <div>
-        {shortInfos.map(si => (
-          <div key={si.annonsid} style={{ marginBottom: "100px" }}>
-            <div>
-              <h1
-                style={{
-                  background: "purple",
-                  color: "white",
-                  textAlign: "center",
-                  margin: 0,
-                  padding: "5px"
-                }}
-              >
-                {si.arbetsplatsnamn}
-              </h1>
-            </div>
-            <h2
+  const reactDom = renderToString(
+    <div>
+      {shortInfos.map(si => (
+        <div key={si.annonsid} style={{ marginBottom: "100px" }}>
+          <div>
+            <h1
               style={{
-                background: "black",
+                background: "purple",
                 color: "white",
                 textAlign: "center",
                 margin: 0,
                 padding: "5px"
               }}
             >
-              {si.annonsrubrik}
-            </h2>
-            <div className="container">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center"
-                }}
-              >
-                <h3>Score: {si.relevans}</h3>
-                <h3>Days left: {si.daysLeft}</h3>
-
-                <img
-                  src={si.logotype}
-                  alt="logotype"
-                  style={{
-                    height: "auto",
-                    width: "100px",
-                    margin: "15px"
-                  }}
-                />
-              </div>
-
-              <p style={{ whiteSpace: "pre-wrap" }}>{si.jobDescription}</p>
-            </div>
+              {si.arbetsplatsnamn}
+            </h1>
           </div>
-        ))}
-      </div>
-    );
+          <h2
+            style={{
+              background: "black",
+              color: "white",
+              textAlign: "center",
+              margin: 0,
+              padding: "5px"
+            }}
+          >
+            {si.annonsrubrik}
+          </h2>
+          <div className="container">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                height: "100px"
+              }}
+            >
+              <h3>Days left: {si.daysLeft}</h3>
+              <h3>Score: {si.relevans}</h3>
+            </div>
+            <p
+              style={{ whiteSpace: "pre-wrap" }}
+              dangerouslySetInnerHTML={{ __html: si.jobDescription }}
+            ></p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
+  app.get("/", (req, res) => {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(htmlTemplate(reactDom));
   });
