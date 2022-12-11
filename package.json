@@ -24,7 +24,7 @@
     "@types/react-dom": "^16.9.1",
     "dotenv": "^8.1.0",
     "event-stream": "^4.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "got": "^9.6.0",
     "jest": "^24.9.0",
     "luxon": "^1.19.3",
